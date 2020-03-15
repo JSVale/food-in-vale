@@ -1,23 +1,6 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import MainApp from "./src/App";
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Food In Vale!</Text>
-    </View>
-  );
+  return <MainApp />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  text: {
-    color: '#EA1D2C',
-    fontSize: 28,
-  },
-});
