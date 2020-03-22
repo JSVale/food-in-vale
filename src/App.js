@@ -1,23 +1,11 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import Router from "./__routes";
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Food In Vale!</Text>
-    </View>
+    <NavigationContainer>
+      <Router />
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  text: {
-    color: "#EA1D2C",
-    fontSize: 28
-  }
-});
