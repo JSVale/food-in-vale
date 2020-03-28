@@ -1,96 +1,72 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
   StatusBar,
   TextInput,
   FlatList,
-  Image
+  Image,
+  Alert
 } from "react-native";
+import Axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import Pages from "../../__routes/Pages";
 import styles from "./styles";
 
 export default function() {
-  const categories = [
-    {
-      id: 1,
-      url:
-        "https://i.pinimg.com/originals/d8/8a/ca/d88acacdd20c6e4af73520058cb85aca.jpg",
-      title: "Lanches"
-    },
-    {
-      id: 2,
-      url: "https://images4.alphacoders.com/943/943258.jpg",
-      title: "Massas"
-    },
-    {
-      id: 3,
-      url: "https://images7.alphacoders.com/404/404658.jpg",
-      title: "Bolos"
-    },
-    {
-      id: 4,
-      url:
-        "https://static.independent.co.uk/s3fs-public/thumbnails/image/2017/09/28/11/sushi-istock.gif",
-      title: "Japonesa"
-    },
-    {
-      id: 5,
-      url:
-        "https://i.pinimg.com/originals/1f/97/96/1f979673442679706640df8c0cfb70a4.jpg",
-      title: "Brasileira"
-    }
-  ];
+  const [search, setSearch] = useState("");
 
-  const restaurants = [
-    {
-      id: 1,
-      title: "Restaurante do Boteco",
-      distance: 2.7,
-      delivery_time: "10 - 15 min",
-      delivery_price: "R$5,00",
-      minimum_price: 12,
-      category: "Lanches",
-      image_url:
-        "https://freelogo-assets.s3.amazonaws.com/sites/all/themes/freelogoservices/images/smalllogorestaurant1.jpg"
-    },
-    {
-      id: 2,
-      title: "Tempesto",
-      distance: 9.8,
-      delivery_time: "40 - 50 min",
-      delivery_price: "R$1,00",
-      minimum_price: 12,
-      category: "Lanches",
-      image_url:
-        "https://image.shutterstock.com/image-vector/restaurant-logo-template-260nw-1254530365.jpg"
-    },
-    {
-      id: 3,
-      title: "Boca nervosa",
-      distance: 1.5,
-      delivery_time: "80 - 120 min",
-      delivery_price: "R$2,00",
-      minimum_price: 12,
-      category: "Lanches",
-      image_url:
-        "https://freelogo-assets.s3.amazonaws.com/sites/all/themes/freelogoservices/images/smalllogorestaurant1.jpg"
-    },
-    {
-      id: 4,
-      title: "Restaurante do Boteco",
-      distance: 2,
-      delivery_time: "30 - 40 min",
-      delivery_price: "R$3,00",
-      minimum_price: 12,
-      category: "Lanches",
-      image_url:
-        "https://i.etsystatic.com/11979725/r/il/425b9a/1431687786/il_570xN.1431687786_w5a8.jpg"
-    }
-  ];
+  const [categories, setCategories] = useState([]);
+  const [restaurants, setRestaurants] = useState([]);
 
   const navigation = useNavigation();
+
+  useEffect(() => {
+    getCategories();
+    getRestaurants();
+  }, []);
+
+  useEffect(() => {
+    getRestaurants(search);
+  }, [search]);
+
+  async function getCategories() {
+    try {
+      const response = await Axios.get(
+        "https://raw.githubusercontent.com/codeeasy-dev/food-in-vale-dataset/master/categories.json"
+      );
+
+      if (!("data" in response)) throw response;
+
+      setCategories(response.data);
+    } catch (error) {
+      // eslint-disable-next-line no-undef
+      if (__DEV__) window.console.log(error);
+      Alert.alert("AVISO", "Houve um erro ao selecionar as categorias.");
+    }
+  }
+
+  async function getRestaurants(filterByName = "") {
+    try {
+      const response = await Axios.get(
+        "https://raw.githubusercontent.com/codeeasy-dev/food-in-vale-dataset/master/restaurants.json"
+      );
+
+      if (!("data" in response)) throw response;
+
+      const newRestaurants = filterByName
+        ? response.data.filter(restaurant =>
+            restaurant.title.includes(filterByName)
+          )
+        : response.data;
+
+      setRestaurants(newRestaurants);
+    } catch (error) {
+      // eslint-disable-next-line no-undef
+      if (__DEV__) window.console.log(error);
+      Alert.alert("AVISO", "Houve um erro ao selecionar os restaurantes.");
+    }
+  }
 
   function Category({ item }) {
     return (
@@ -132,7 +108,12 @@ export default function() {
         </View>
 
         <View style={styles.searchBarRow}>
-          <TextInput placeholder="Buscar..." style={styles.searchBar} />
+          <TextInput
+            placeholder="Buscar..."
+            style={styles.searchBar}
+            value={search}
+            onChangeText={setSearch}
+          />
         </View>
 
         <View style={styles.categoryRow}>
